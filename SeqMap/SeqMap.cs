@@ -26,6 +26,9 @@ namespace SeqMap
 			private string _sequenceName;
 			private RegistrationType _registartionType;
 
+			private ItemMap CurrentItem =>
+				_itemsMap[_itemsMap.Count - 1];
+
 			public Wizard(IRegistry registry)
 			{
 				_profileIndexes = new Dictionary<string, int>();
@@ -51,33 +54,53 @@ namespace SeqMap
 				return this;
 			}
 
-			public ISetNextItemWizardStep<TContract> NextIs(
+			public ISetNextItemWizardStep<TContract> NextIsNamed(
+				string name,
+				params string[] profiles) =>
+
+				SetNext(profiles, registry =>
+					registry.For<TContract>()
+						    .Add(context => context.GetInstance<TContract>(name))
+						    .Named(CurrentItem.Name));
+
+			public ISetNextItemWizardStep<TContract> NextIsNamed<TImplementation>(
 				string name,
 				params string[] profiles)
-			{
-				throw new NotImplementedException();
-			}
+				where TImplementation : TContract =>
+
+				SetNext(profiles, registry =>
+					registry.For<TContract>()
+						.Add(context => context.GetInstance<TImplementation>(name))
+						.Named(CurrentItem.Name));
 
 			public ISetNextItemWizardStep<TContract> NextIs<TImplementation>(
 				params string[] profiles)
-				where TImplementation : TContract
-			{
-				throw new NotImplementedException();
-			}
+				where TImplementation : TContract =>
+
+				SetNext(profiles, registry =>
+					registry.For<TContract>()
+						    .Add(context => context.GetInstance<TImplementation>())
+						    .Named(CurrentItem.Name));
 
 			public ISetNextItemWizardStep<TContract> AddNext<TImplementation>(
 				params string[] profiles)
-				where TImplementation : TContract
+				where TImplementation : TContract =>
+
+				SetNext(profiles, registry =>
+					registry.For<TContract>()
+						    .Add<TImplementation>()
+						    .Named(CurrentItem.Name));
+
+			private ISetNextItemWizardStep<TContract> SetNext(
+				string[] profiles,
+				Action<IProfileRegistry> registerItemIn)
 			{
 				var item = new ItemMap();
 				_itemsMap.Add(item);
 
 				void MapHandler(string profileName, IProfileRegistry profileRegistry)
 				{
-					profileRegistry
-						.For<TContract>()
-						.Add<TImplementation>()
-						.Named(item.Name);
+					registerItemIn(profileRegistry);
 
 					if (!_profileIndexes.ContainsKey(profileName))
 						_profileIndexes.Add(profileName, _lastProfileIndex++);
@@ -170,15 +193,20 @@ namespace SeqMap
 
 		public interface ISetNextItemWizardStep<in TContract>
 		{
-			ISetNextItemWizardStep<TContract> NextIs(
-				string name,
-				params string[] profiles);
+			ISetNextItemWizardStep<TContract> AddNext<TImplementation>(
+				params string[] profiles)
+				where TImplementation : TContract;
 
 			ISetNextItemWizardStep<TContract> NextIs<TImplementation>(
 				params string[] profiles)
 				where TImplementation : TContract;
 
-			ISetNextItemWizardStep<TContract> AddNext<TImplementation>(
+			ISetNextItemWizardStep<TContract> NextIsNamed(
+				string name,
+				params string[] profiles);
+
+			ISetNextItemWizardStep<TContract> NextIsNamed<TImplementation>(
+				string name,
 				params string[] profiles)
 				where TImplementation : TContract;
 
