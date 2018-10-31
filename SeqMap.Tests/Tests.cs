@@ -12,11 +12,12 @@ namespace SeqMap.Tests
 		{
 			var registry = new Registry();
 			registry.ForSequenceOf<I>()
-				.Add<A>()
-				.Add<D>()
-				.Add<H>()
-				.Add<G>()
-				.Add<O>()
+				.AddItems()
+				.AddNext<A>()
+				.AddNext<D>()
+				.AddNext<H>()
+				.AddNext<G>()
+				.AddNext<O>()
 				.End();
 
 			using (var container = new Container(registry))
@@ -31,14 +32,15 @@ namespace SeqMap.Tests
 	    {
 		    var registry = new Registry();
 		    registry.ForSequenceOf<I>()
-			    .Add<A>()
-			    .Add<D>()
-			    .Add<A>()
-			    .Add<A>()
-			    .Add<O>()
-				.Add<C>()
-			    .Add<C>()
-			    .Add<C>()
+			    .AddItems()
+				.AddNext<A>()
+			    .AddNext<D>()
+			    .AddNext<A>()
+			    .AddNext<A>()
+			    .AddNext<O>()
+				.AddNext<C>()
+			    .AddNext<C>()
+			    .AddNext<C>()
 				.End();
 
 		    using (var container = new Container(registry))
@@ -58,11 +60,12 @@ namespace SeqMap.Tests
 		    registry.For<I>().Add<L>();
 
 			registry.ForSequenceOf<I>()
-			    .Add<A>()
-			    .Add<D>()
-			    .Add<H>()
-			    .Add<G>()
-			    .Add<O>()
+				.AddItems()
+			    .AddNext<A>()
+			    .AddNext<D>()
+			    .AddNext<H>()
+			    .AddNext<G>()
+			    .AddNext<O>()
 			    .End();
 
 		    registry.For<I>().Add<V>();
@@ -81,7 +84,8 @@ namespace SeqMap.Tests
 	    {
 		    var registry = new Registry();
 		    registry.ForSequenceOf<I>()
-			    .Add<X>()
+			    .AddItems()
+			    .AddNext<X>()
 			    .End();
 
 		    var container = new Container(registry);
@@ -97,14 +101,15 @@ namespace SeqMap.Tests
 	    {
 		    var registry = new Registry();
 			registry.ForSequenceOf<I>()
-			    .Add<A>()
-			    .Add<D>()
-			    .Add<H>("X")
-			    .Add<G>()
-			    .Add<O>("X")
-				.Add<X>("X")
-				.Add<Z>()
-				.Add<E>()
+				.AddItems()
+			    .AddNext<A>()
+			    .AddNext<D>()
+			    .AddNext<H>("X")
+			    .AddNext<G>()
+			    .AddNext<O>("X")
+				.AddNext<X>("X")
+				.AddNext<Z>()
+				.AddNext<E>()
 			    .End();
 
 		    using (var container = new Container(registry))
@@ -125,14 +130,15 @@ namespace SeqMap.Tests
 	    {
 		    var registry = new Registry();
 		    registry.ForSequenceOf<I>()
-			    .Add<A>()
-			    .Add<B>("A", "B", "C", "D", "E", "F", "G")
-			    .Add<C>("A", "B", "C", "D", "E", "F")
-			    .Add<G>("A", "B", "C", "D", "E")
-			    .Add<O>("A", "B", "C", "D")
-			    .Add<X>("A", "B", "C")
-			    .Add<Z>("A", "B")
-			    .Add<E>("A")
+				.AddItems()
+			    .AddNext<A>()
+			    .AddNext<B>("A", "B", "C", "D", "E", "F", "G")
+			    .AddNext<C>("A", "B", "C", "D", "E", "F")
+			    .AddNext<G>("A", "B", "C", "D", "E")
+			    .AddNext<O>("A", "B", "C", "D")
+			    .AddNext<X>("A", "B", "C")
+			    .AddNext<Z>("A", "B")
+			    .AddNext<E>("A")
 			    .End();
 
 		    using (var container = new Container(registry))
