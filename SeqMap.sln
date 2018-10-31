@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2000
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeqMap", "SeqMap\SeqMap.csproj", "{30AAE76C-B264-4857-A0A9-8161EB0D85DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeqMap.Tests", "SeqMap.Tests\SeqMap.Tests.csproj", "{2123BFEE-C2A5-4E28-972C-772EE95129F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30AAE76C-B264-4857-A0A9-8161EB0D85DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30AAE76C-B264-4857-A0A9-8161EB0D85DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30AAE76C-B264-4857-A0A9-8161EB0D85DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30AAE76C-B264-4857-A0A9-8161EB0D85DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2123BFEE-C2A5-4E28-972C-772EE95129F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2123BFEE-C2A5-4E28-972C-772EE95129F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2123BFEE-C2A5-4E28-972C-772EE95129F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2123BFEE-C2A5-4E28-972C-772EE95129F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F49E401A-503D-4F7D-9C75-C6385B867C4E}
+	EndGlobalSection
+EndGlobal
