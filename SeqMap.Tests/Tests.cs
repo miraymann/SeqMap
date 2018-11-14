@@ -7,8 +7,23 @@ namespace SeqMap.Tests
 {
     public class Tests
     {
+	    [Test]
+		public void EmptySequence_NoProfile_Test()
+	    {
+		    var registry = new Registry();
+		    registry.ForSequenceOf<I>()
+			    .UseItems()
+			    .End();
+
+		    using (var container = new Container(registry))
+		    {
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    CollectionAssert.IsEmpty(sequence);
+		    }
+		}
+
 		[Test]
-	    public void NoProfileTest()
+	    public void NoProfile_Test()
 		{
 			var registry = new Registry();
 			registry.ForSequenceOf<I>()
@@ -22,13 +37,14 @@ namespace SeqMap.Tests
 
 			using (var container = new Container(registry))
 			{
-				var result = SelectResultViewFrom(container);
-				Assert.AreEqual("ADHGO", result);
+				var sequence = container.GetInstance<IEnumerable<I>>();
+				var resultView = SelectResultViewFrom(sequence);
+				Assert.AreEqual("ADHGO", resultView);
 			}
 		}
 
-	    [Test]
-	    public void ItemsDublication_NoProfileTest()
+		[Test]
+	    public void ItemsDublication_NoProfile_Test()
 	    {
 		    var registry = new Registry();
 		    registry.ForSequenceOf<I>()
@@ -45,13 +61,14 @@ namespace SeqMap.Tests
 
 		    using (var container = new Container(registry))
 		    {
-			    var result = SelectResultViewFrom(container);
-			    Assert.AreEqual("ADAAOCCC", result);
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    var resultView = SelectResultViewFrom(sequence);
+			    Assert.AreEqual("ADAAOCCC", resultView);
 		    }
 	    }
 
 		[Test]
-	    public void IsIndependentOfStandardStructureMap_NoProfileTest()
+	    public void IsIndependentOfStandardStructureMap_NoProfile_Test()
 	    {
 		    var registry = new Registry();
 
@@ -74,13 +91,14 @@ namespace SeqMap.Tests
 
 		    using (var container = new Container(registry))
 		    {
-			    var result = SelectResultViewFrom(container);
-			    Assert.AreEqual("ADHGO", result);
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    var resultView = SelectResultViewFrom(sequence);
+			    Assert.AreEqual("ADHGO", resultView);
 		    }
 	    }
 
 	    [Test]
-	    public void NoProfileSingleItemTest()
+	    public void NoProfile_SingleItem_Test()
 	    {
 		    var registry = new Registry();
 		    registry.ForSequenceOf<I>()
@@ -97,62 +115,71 @@ namespace SeqMap.Tests
 		}
 
 		[Test]
-	    public void SingleProfileTest()
+	    public void SingleProfile_Test()
 	    {
 		    var registry = new Registry();
 			registry.ForSequenceOf<I>()
 				.AddItems()
 			    .AddNext<A>()
 			    .AddNext<D>()
-			    .AddNext<H>("X")
+			    .AddNext<H>("Dog")
 			    .AddNext<G>()
-			    .AddNext<O>("X")
-				.AddNext<X>("X")
+			    .AddNext<O>("Dog")
+				.AddNext<X>("Dog")
 				.AddNext<Z>()
 				.AddNext<E>()
 			    .End();
 
 		    using (var container = new Container(registry))
 		    {
-			    var result = SelectResultViewFrom(container);
-			    Assert.AreEqual("ADGZE", result);
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    var resultView = SelectResultViewFrom(sequence);
+			    Assert.AreEqual("ADGZE", resultView);
 
-			    using (var xContainer = container.GetNestedContainer("X"))
+			    using (var dogContainer = container.GetNestedContainer("Dog"))
 			    {
-				    var xResult = SelectResultViewFrom(xContainer);
-				    Assert.AreEqual("ADHGOXZE", xResult);
+					var dogSequence = dogContainer.GetInstance<IEnumerable<I>>();
+					var dogResultView = SelectResultViewFrom(dogSequence);
+				    Assert.AreEqual("ADHGOXZE", dogResultView);
 				}
 		    }
 	    }
 
 		[Test]
-	    public void MultiProfilesTest()
+	    public void MultiProfiles_Test()
 	    {
 		    var registry = new Registry();
 		    registry.ForSequenceOf<I>()
 				.AddItems()
 			    .AddNext<A>()
-			    .AddNext<B>("A", "B", "C", "D", "E", "F", "G")
-			    .AddNext<C>("A", "B", "C", "D", "E", "F")
-			    .AddNext<G>("A", "B", "C", "D", "E")
-			    .AddNext<O>("A", "B", "C", "D")
-			    .AddNext<X>("A", "B", "C")
-			    .AddNext<Z>("A", "B")
-			    .AddNext<E>("A")
+			    .AddNext<B>("=", "==", "===", "====", "=====", "======", "=======")
+			    .AddNext<C>("=", "==", "===", "====", "=====", "======")
+			    .AddNext<G>("=", "==", "===", "====", "=====")
+			    .AddNext<O>("=", "==", "===", "====")
+			    .AddNext<X>("=", "==", "===")
+			    .AddNext<Z>("=", "==")
+			    .AddNext<E>("=")
 			    .End();
 
 		    using (var container = new Container(registry))
 		    {
-			    var result = SelectResultViewFrom(container);
-			    Assert.AreEqual("A", result);
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+				var resultView = SelectResultViewFrom(sequence);
+			    Assert.AreEqual("A", resultView);
 
 			    var expectedResult = "ABCGOXZE";
-				foreach (var profile in "ABCDEFG".Select(o => o.ToString()))
+			    var profiles = Enumerable
+				    .Range(1, 7)
+				    .Select(i => Enumerable.Repeat("=", i))
+				    .Select(o => string.Join(string.Empty, o));
+
+				foreach (var profile in profiles)
 			    {
 				    using (var profileContainer = container.GetNestedContainer(profile))
 				    {
-					    var profileResult = SelectResultViewFrom(profileContainer);
-					    Assert.AreEqual(expectedResult, profileResult);
+					    var profileSequence = profileContainer.GetInstance<IEnumerable<I>>();
+						var profileResultView = SelectResultViewFrom(profileSequence);
+					    Assert.AreEqual(expectedResult, profileResultView);
 				    }
 
 				    expectedResult = expectedResult
@@ -161,10 +188,198 @@ namespace SeqMap.Tests
 		    }
 		}
 
-	    private string SelectResultViewFrom(IContainer container) =>
-		    string.Join(string.Empty, 
-			    container.GetInstance<IEnumerable<I>>()
-				         .Select(o => o.Name));
+	    [Test]
+	    public void EmptySequenceForDefaultProfile_SingleProfile_Test()
+	    {
+		    var registry = new Registry();
+		    registry.ForSequenceOf<I>()
+			    .UseItems()
+			    .AddNext<A>("Dog")
+			    .AddNext<B>("Dog")
+			    .AddNext<C>("Dog")
+			    .End();
+
+		    using (var container = new Container(registry))
+		    {
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    CollectionAssert.IsEmpty(sequence);
+
+			    using (var dogContainer = container.GetNestedContainer("Dog"))
+			    {
+				    var dogSequence = dogContainer.GetInstance<IEnumerable<I>>();
+				    var dogResultView = SelectResultViewFrom(dogSequence);
+				    Assert.AreEqual("ABC", dogResultView);
+			    }
+		    }
+	    }
+
+	    public void EmptySequenceForDefaultProfile_TwoProfiles_Test()
+	    {
+		    var registry = new Registry();
+		    registry.ForSequenceOf<I>()
+			    .UseItems()
+			    .AddNext<A>("Dog")
+			    .AddNext<B>("Dog")
+			    .AddNext<Y>("Dog", "Cat")
+			    .AddNext<L>("Cat", "Dog")
+			    .AddNext<M>("Cat")
+			    .AddNext<R>("Cat")
+			    .End();
+
+		    using (var container = new Container(registry))
+		    {
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    CollectionAssert.IsEmpty(sequence);
+
+			    using (var dogContainer = container.GetNestedContainer("Dog"))
+			    {
+				    var dogSequence = dogContainer.GetInstance<IEnumerable<I>>();
+				    var dogResultView = SelectResultViewFrom(dogSequence);
+				    Assert.AreEqual("ABYL", dogResultView);
+			    }
+
+			    using (var catContainer = container.GetNestedContainer("Cat"))
+			    {
+				    var catSequence = catContainer.GetInstance<IEnumerable<I>>();
+				    var catResultView = SelectResultViewFrom(catSequence);
+				    Assert.AreEqual("YLMR", catResultView);
+			    }
+		    }
+	    }
+
+		[Test]
+	    public void UseTwoNamedSequences_NoProfile_Test()
+		{
+		    var registry = new Registry();
+			registry
+				.ForSequenceOf<I>()
+				.Named("Red")
+				.UseItems()
+				.AddNext<A>()
+				.AddNext<B>()
+				.AddNext<C>()
+				.AddNext<D>()
+				.AddNext<E>()
+				.End();
+
+		    registry
+			    .ForSequenceOf<I>()
+			    .Named("Blue")
+			    .UseItems()
+			    .AddNext<F>()
+			    .AddNext<G>()
+			    .AddNext<K>()
+			    .AddNext<A>()
+			    .AddNext<B>()
+			    .End();
+
+		    using (var container = new Container(registry))
+		    {
+			    var redSequence = container.GetInstance<IEnumerable<I>>("Red");
+			    var blueSequence = container.GetInstance<IEnumerable<I>>("Blue");
+			    var defaultSequence = container.GetInstance<IEnumerable<I>>();
+
+			    var redResultView = SelectResultViewFrom(redSequence);
+			    var blueResultView = SelectResultViewFrom(blueSequence);
+			    var defaultResultView = SelectResultViewFrom(defaultSequence);
+
+				Assert.AreEqual("ABCDE", redResultView);
+			    Assert.AreEqual("FGKAB", blueResultView);
+			    Assert.AreEqual("FGKAB", defaultResultView);
+			}
+		}
+
+	    [Test]
+	    public void TwoNamedSequences_UseFirstAddSecond_NoProfile_Test()
+		{
+		    var registry = new Registry();
+		    registry
+			    .ForSequenceOf<I>()
+			    .Named("Red")
+			    .UseItems()
+			    .AddNext<A>()
+			    .AddNext<B>()
+			    .AddNext<C>()
+			    .AddNext<D>()
+			    .AddNext<E>()
+			    .End();
+
+		    registry
+			    .ForSequenceOf<I>()
+			    .Named("Blue")
+			    .AddItems()
+			    .AddNext<F>()
+			    .AddNext<G>()
+			    .AddNext<K>()
+			    .AddNext<A>()
+			    .AddNext<B>()
+			    .End();
+
+		    using (var container = new Container(registry))
+		    {
+			    var redSequence = container.GetInstance<IEnumerable<I>>("Red");
+			    var blueSequence = container.GetInstance<IEnumerable<I>>("Blue");
+			    var defaultSequence = container.GetInstance<IEnumerable<I>>();
+
+			    var redResultView = SelectResultViewFrom(redSequence);
+			    var blueResultView = SelectResultViewFrom(blueSequence);
+			    var defaultResultView = SelectResultViewFrom(defaultSequence);
+
+			    Assert.AreEqual("ABCDE", redResultView);
+			    Assert.AreEqual("FGKAB", blueResultView);
+			    Assert.AreEqual("ABCDE", defaultResultView);
+		    }
+	    }
+
+	    [Test]
+	    public void TwoNamedSequences_TwoProfiles_NotIntersectedItems_Test()
+	    {
+		    var registry = new Registry();
+		    registry
+			    .ForSequenceOf<I>()
+			    .Named("Red")
+			    .AddItems()
+			    .AddNext<A>("Dog")
+			    .AddNext<B>("Cat")
+			    .AddNext<C>("Dog")
+			    .AddNext<X>("Dog")
+			    .AddNext<Y>("Cat")
+			    .End();
+
+		    registry
+			    .ForSequenceOf<I>()
+			    .Named("Blue")
+			    .AddItems()
+			    .AddNext<A>("Cat")
+			    .AddNext<B>("Dog")
+			    .AddNext<C>("Cat")
+			    .AddNext<X>("Cat")
+			    .AddNext<Y>("Dog")
+			    .End();
+
+		    using (var container = new Container(registry))
+			using (var catContainer = container.GetNestedContainer("Cat"))
+			using (var dogContainer = container.GetNestedContainer("Dog"))
+			{
+				var redCatSequence = catContainer.GetInstance<IEnumerable<I>>("Red");
+				var blueCatSequence = catContainer.GetInstance<IEnumerable<I>>("Blue");
+				var redDogSequence = dogContainer.GetInstance<IEnumerable<I>>("Red");
+				var blueDogSequence = dogContainer.GetInstance<IEnumerable<I>>("Blue");
+
+				var redCatResultView = SelectResultViewFrom(redCatSequence);
+				var blueCatResultView = SelectResultViewFrom(blueCatSequence);
+				var redDogResultView = SelectResultViewFrom(redDogSequence);
+				var blueDogResultView = SelectResultViewFrom(blueDogSequence);
+
+				Assert.AreEqual("BY", redCatResultView);
+				Assert.AreEqual("ACX", blueCatResultView);
+				Assert.AreEqual("ACX", redDogResultView);
+				Assert.AreEqual("BY", blueDogResultView);
+			}
+	    }
+
+	    private string SelectResultViewFrom(IEnumerable<I> sequence) =>
+		    string.Join(string.Empty, sequence.Select(o => o.Name));
 
 		private interface I { string Name { get; } }
 		private class A : I { public string Name => "A"; }

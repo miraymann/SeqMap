@@ -42,15 +42,17 @@ namespace SeqMap
 				return this;
 			}
 
-			public ISetNextItemWizardStep<TContract> AddItems()
-			{
-				_registartionType = RegistrationType.Add;
-				return this;
-			}
+			public ISetNextItemWizardStep<TContract> AddItems() =>
+				Init(RegistrationType.Add);
 
-			public ISetNextItemWizardStep<TContract> UseItems()
+			public ISetNextItemWizardStep<TContract> UseItems() => 
+				Init(RegistrationType.Use);
+
+			private ISetNextItemWizardStep<TContract> Init(
+				RegistrationType registrationType)
 			{
-				_registartionType = RegistrationType.Use;
+				_registartionType = registrationType;
+				IndexProfile(DefaultProfile);
 				return this;
 			}
 
@@ -101,9 +103,7 @@ namespace SeqMap
 				void MapHandler(string profileName, IProfileRegistry profileRegistry)
 				{
 					registerItemIn(profileRegistry);
-
-					if (!_profileIndexes.ContainsKey(profileName))
-						_profileIndexes.Add(profileName, _lastProfileIndex++);
+					IndexProfile(profileName);
 
 					var currentHandler = _itemsMap[_itemsMap.Count - 1];
 					currentHandler.Profiling |= 1UL << _profileIndexes[profileName];
@@ -136,6 +136,12 @@ namespace SeqMap
 					var registerSequence = CreateRegistrator(profilingMask);
 					_registry.Profile(profile, registerSequence);
 				}
+			}
+
+			private void IndexProfile(string profileName)
+			{
+				if (!_profileIndexes.ContainsKey(profileName))
+					_profileIndexes.Add(profileName, _lastProfileIndex++);
 			}
 
 			private Action<IProfileRegistry> CreateRegistrator(ulong profilingMask) => registry =>
