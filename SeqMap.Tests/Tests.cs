@@ -11,8 +11,8 @@ namespace SeqMap.Tests
 		public void EmptySequence_NoProfile_Test()
 	    {
 		    var registry = new Registry();
-		    registry.ForSequenceOf<I>()
-			    .UseItems()
+		    registry.ForEnumerabletOf<I>()
+			    .UseSequence()
 			    .End();
 
 		    using (var container = new Container(registry))
@@ -26,8 +26,8 @@ namespace SeqMap.Tests
 	    public void NoProfile_Test()
 		{
 			var registry = new Registry();
-			registry.ForSequenceOf<I>()
-				.AddItems()
+			registry.ForEnumerabletOf<I>()
+				.AddSequence()
 				.AddNext<A>()
 				.AddNext<D>()
 				.AddNext<H>()
@@ -47,8 +47,9 @@ namespace SeqMap.Tests
 	    public void ItemsDublication_NoProfile_Test()
 	    {
 		    var registry = new Registry();
-		    registry.ForSequenceOf<I>()
-			    .AddItems()
+		    registry
+			    .ForEnumerabletOf<I>()
+			    .AddSequence()
 				.AddNext<A>()
 			    .AddNext<D>()
 			    .AddNext<A>()
@@ -76,8 +77,9 @@ namespace SeqMap.Tests
 		    registry.For<I>().Add<M>();
 		    registry.For<I>().Add<L>();
 
-			registry.ForSequenceOf<I>()
-				.AddItems()
+			registry
+				.ForEnumerabletOf<I>()
+				.AddSequence()
 			    .AddNext<A>()
 			    .AddNext<D>()
 			    .AddNext<H>()
@@ -101,8 +103,8 @@ namespace SeqMap.Tests
 	    public void NoProfile_SingleItem_Test()
 	    {
 		    var registry = new Registry();
-		    registry.ForSequenceOf<I>()
-			    .AddItems()
+		    registry.ForEnumerabletOf<I>()
+			    .AddSequence()
 			    .AddNext<X>()
 			    .End();
 
@@ -118,8 +120,8 @@ namespace SeqMap.Tests
 	    public void SingleProfile_Test()
 	    {
 		    var registry = new Registry();
-			registry.ForSequenceOf<I>()
-				.AddItems()
+			registry.ForEnumerabletOf<I>()
+				.AddSequence()
 			    .AddNext<A>()
 			    .AddNext<D>()
 			    .AddNext<H>("Dog")
@@ -149,8 +151,9 @@ namespace SeqMap.Tests
 	    public void MultiProfiles_Test()
 	    {
 		    var registry = new Registry();
-		    registry.ForSequenceOf<I>()
-				.AddItems()
+		    registry
+			    .ForEnumerabletOf<I>()
+				.AddSequence()
 			    .AddNext<A>()
 			    .AddNext<B>("=", "==", "===", "====", "=====", "======", "=======")
 			    .AddNext<C>("=", "==", "===", "====", "=====", "======")
@@ -192,8 +195,9 @@ namespace SeqMap.Tests
 	    public void EmptySequenceForDefaultProfile_SingleProfile_Test()
 	    {
 		    var registry = new Registry();
-		    registry.ForSequenceOf<I>()
-			    .UseItems()
+		    registry
+			    .ForEnumerabletOf<I>()
+			    .UseSequence()
 			    .AddNext<A>("Dog")
 			    .AddNext<B>("Dog")
 			    .AddNext<C>("Dog")
@@ -202,7 +206,8 @@ namespace SeqMap.Tests
 		    using (var container = new Container(registry))
 		    {
 			    var sequence = container.GetInstance<IEnumerable<I>>();
-			    CollectionAssert.IsEmpty(sequence);
+			    var resultView = SelectResultViewFrom(sequence);
+			    CollectionAssert.IsEmpty(resultView);
 
 			    using (var dogContainer = container.GetNestedContainer("Dog"))
 			    {
@@ -216,8 +221,9 @@ namespace SeqMap.Tests
 	    public void EmptySequenceForDefaultProfile_TwoProfiles_Test()
 	    {
 		    var registry = new Registry();
-		    registry.ForSequenceOf<I>()
-			    .UseItems()
+		    registry
+			    .ForEnumerabletOf<I>()
+			    .UseSequence()
 			    .AddNext<A>("Dog")
 			    .AddNext<B>("Dog")
 			    .AddNext<Y>("Dog", "Cat")
@@ -252,9 +258,9 @@ namespace SeqMap.Tests
 		{
 		    var registry = new Registry();
 			registry
-				.ForSequenceOf<I>()
+				.ForEnumerabletOf<I>()				
+				.UseSequence()
 				.Named("Red")
-				.UseItems()
 				.AddNext<A>()
 				.AddNext<B>()
 				.AddNext<C>()
@@ -263,9 +269,9 @@ namespace SeqMap.Tests
 				.End();
 
 		    registry
-			    .ForSequenceOf<I>()
-			    .Named("Blue")
-			    .UseItems()
+			    .ForEnumerabletOf<I>()
+			    .UseSequence()
+				.Named("Blue")
 			    .AddNext<F>()
 			    .AddNext<G>()
 			    .AddNext<K>()
@@ -294,9 +300,9 @@ namespace SeqMap.Tests
 		{
 		    var registry = new Registry();
 		    registry
-			    .ForSequenceOf<I>()
+			    .ForEnumerabletOf<I>()
+				.UseSequence()
 			    .Named("Red")
-			    .UseItems()
 			    .AddNext<A>()
 			    .AddNext<B>()
 			    .AddNext<C>()
@@ -305,9 +311,9 @@ namespace SeqMap.Tests
 			    .End();
 
 		    registry
-			    .ForSequenceOf<I>()
+			    .ForEnumerabletOf<I>()
+				.AddSequence()
 			    .Named("Blue")
-			    .AddItems()
 			    .AddNext<F>()
 			    .AddNext<G>()
 			    .AddNext<K>()
@@ -336,9 +342,9 @@ namespace SeqMap.Tests
 	    {
 		    var registry = new Registry();
 		    registry
-			    .ForSequenceOf<I>()
+			    .ForEnumerabletOf<I>()
+				.AddSequence()
 			    .Named("Red")
-			    .AddItems()
 			    .AddNext<A>("Dog")
 			    .AddNext<B>("Cat")
 			    .AddNext<C>("Dog")
@@ -347,9 +353,9 @@ namespace SeqMap.Tests
 			    .End();
 
 		    registry
-			    .ForSequenceOf<I>()
+			    .ForEnumerabletOf<I>()
+				.AddSequence()
 			    .Named("Blue")
-			    .AddItems()
 			    .AddNext<A>("Cat")
 			    .AddNext<B>("Dog")
 			    .AddNext<C>("Cat")
