@@ -74,7 +74,7 @@ namespace SeqMap
 					new ChooseCtorParamWizardStep<TImplementation>.State
 					{
 						CurrentItemProfiles = profiles,
-						InitParams = o => o,
+						InitCtorParams = o => o,
 						Base = _state
 					});
 			}
@@ -191,12 +191,12 @@ namespace SeqMap
 				where TImplementation : TContract
 			{
 				public delegate SmartInstance<TImplementation, TContract>
-					InitParams(SmartInstance<TImplementation, TContract> instance);
+					InitCtorParams(SmartInstance<TImplementation, TContract> instance);
 
 				public class State
 				{
 					public Wizard<TContract>.State Base { get; set; }
-					public InitParams InitParams { get; set; }
+					public InitCtorParams InitCtorParams { get; set; }
 					public string[] CurrentItemProfiles { get; set; }
 					public Action Flush { get; set; }
 				}
@@ -208,7 +208,7 @@ namespace SeqMap
 					_state = state;
 
 					void Register(string itemName, IProfileRegistry registry) =>
-						_state.InitParams(registry.For<TContract>().Add<TImplementation>())
+						_state.InitCtorParams(registry.For<TContract>().Add<TImplementation>())
 							  .Named(itemName);
 					
 					_state.Flush = () =>
@@ -263,7 +263,7 @@ namespace SeqMap
 					new SetCtorArgWizardStep<TParam>(
 						new SetCtorArgWizardStep<TParam>.State
 						{
-							ChooseCtor = instance => instance.Ctor<TParam>(),
+							ChooseCtorParam = instance => instance.Ctor<TParam>(),
 							Base = _state
 						});
 
@@ -271,7 +271,7 @@ namespace SeqMap
 					new SetCtorArgWizardStep<TParam>(
 						new SetCtorArgWizardStep<TParam>.State
 						{
-							ChooseCtor = instance => instance.Ctor<TParam>(paramName),
+							ChooseCtorParam = instance => instance.Ctor<TParam>(paramName),
 							Base = _state
 						});
 
@@ -279,15 +279,15 @@ namespace SeqMap
 					: ISetCtorArgWizardStep<TContract, TParam>
 				{
 					public delegate DependencyExpression<SmartInstance<TImplementation, TContract>, TParam>
-						ChooseCtor(SmartInstance<TImplementation, TContract> instance);
+						ChooseCtorParam(SmartInstance<TImplementation, TContract> instance);
 
 					private delegate SmartInstance<TImplementation, TContract>
-						InitOneParam(DependencyExpression<SmartInstance<TImplementation, TContract>, TParam> ctor);
+						InitCtorParam(DependencyExpression<SmartInstance<TImplementation, TContract>, TParam> ctor);
 
 					public class State
 					{
 						public ChooseCtorParamWizardStep<TImplementation>.State Base { get; set; }
-						public ChooseCtor ChooseCtor { get; set; }
+						public ChooseCtorParam ChooseCtorParam { get; set; }
 					}
 
 					private readonly State _state;
@@ -322,11 +322,11 @@ namespace SeqMap
 						return new ChooseCtorParamWizardStep<TImplementation>(_state.Base);
 					}
 
-					private void SetParam(InitOneParam initOneParam)
+					private void SetParam(InitCtorParam initCtorParam)
 					{
-						var oldInitParams = _state.Base.InitParams;
-						_state.Base.InitParams = o =>
-							initOneParam(_state.ChooseCtor(oldInitParams(o)));
+						var initPreviousCtorParams = _state.Base.InitCtorParams;
+						_state.Base.InitCtorParams = o =>
+							initCtorParam(_state.ChooseCtorParam(initPreviousCtorParams(o)));
 					}
 				}
 			}
