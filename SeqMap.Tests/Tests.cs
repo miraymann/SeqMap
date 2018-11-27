@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using NUnit.Framework;
 using StructureMap;
 
@@ -125,10 +124,10 @@ namespace SeqMap.Tests
 				.AddSequence()
 			    .AddNext<A>()
 			    .AddNext<D>()
-			    .AddNext<H>("Dog")
+			    .AddNext<H>().IntoProfile("Dog")
 			    .AddNext<G>()
-			    .AddNext<O>("Dog")
-				.AddNext<X>("Dog")
+			    .AddNext<O>().IntoProfile("Dog")
+				.AddNext<X>().IntoProfile("Dog")
 				.AddNext<Z>()
 				.AddNext<E>()
 			    .End();
@@ -160,13 +159,13 @@ namespace SeqMap.Tests
 			    .ForEnumerabletOf<I>()
 				.AddSequence()
 			    .AddNext<A>()
-			    .AddNext<B>("1", "22", "333", "4444", "55555", "666666", "7777777")
-			    .AddNext<C>("1", "22", "333", "4444", "55555", "666666")
-			    .AddNext<G>("1", "22", "333", "4444", "55555")
-			    .AddNext<O>("1", "22", "333", "4444")
-			    .AddNext<X>("1", "22", "333")
-			    .AddNext<Z>("1", "22")
-			    .AddNext<E>("1")
+			    .AddNext<B>().IntoProfiles("1", "22", "333", "4444", "55555", "666666", "7777777")
+			    .AddNext<C>().IntoProfiles("1", "22", "333", "4444", "55555", "666666")
+			    .AddNext<G>().IntoProfiles("1", "22", "333", "4444", "55555")
+			    .AddNext<O>().IntoProfiles("1", "22", "333", "4444")
+			    .AddNext<X>().IntoProfiles("1", "22", "333")
+			    .AddNext<Z>().IntoProfiles("1", "22")
+			    .AddNext<E>().IntoProfile("1")
 			    .End();
 
 			var profilesSequencesViews = new Dictionary<string, string>();
@@ -215,10 +214,10 @@ namespace SeqMap.Tests
 		    registry
 			    .ForEnumerabletOf<I>()
 			    .UseSequence()
-			    .AddNext<A>("Dog")
-			    .AddNext<B>("Dog")
-			    .AddNext<C>("Dog")
-			    .End();
+			    .AddNext<A>().IntoProfile("Dog")
+			    .AddNext<B>().IntoProfile("Dog")
+			    .AddNext<C>().IntoProfile("Dog")
+				.End();
 
 			using (var container = new Container(registry))
 			using (var dogContainer = container.GetNestedContainer("Dog"))
@@ -243,12 +242,12 @@ namespace SeqMap.Tests
 		    registry
 			    .ForEnumerabletOf<I>()
 			    .UseSequence()
-			    .AddNext<A>("Dog")
-			    .AddNext<B>("Dog")
-			    .AddNext<Y>("Dog", "Cat")
-			    .AddNext<L>("Cat", "Dog")
-			    .AddNext<M>("Cat")
-			    .AddNext<R>("Cat")
+			    .AddNext<A>().IntoProfile("Dog")
+			    .AddNext<B>().IntoProfile("Dog")
+				.AddNext<Y>().IntoProfiles("Dog", "Cat")
+			    .AddNext<L>().IntoProfiles("Cat", "Dog")
+			    .AddNext<M>().IntoProfile("Cat")
+			    .AddNext<R>().IntoProfile("Cat")
 			    .End();
 			
 			using (var container = new Container(registry))
@@ -370,22 +369,22 @@ namespace SeqMap.Tests
 			    .ForEnumerabletOf<I>()
 				.AddSequence()
 			    .Named("Red")
-			    .AddNext<A>("Dog")
-			    .AddNext<B>("Cat")
-			    .AddNext<C>("Dog")
-			    .AddNext<X>("Dog")
-			    .AddNext<Y>("Cat")
+			    .AddNext<A>().IntoProfile("Dog")
+			    .AddNext<B>().IntoProfile("Cat")
+			    .AddNext<C>().IntoProfile("Dog")
+			    .AddNext<X>().IntoProfile("Dog")
+			    .AddNext<Y>().IntoProfile("Cat")
 			    .End();
 
 		    registry
 			    .ForEnumerabletOf<I>()
 				.AddSequence()
 			    .Named("Blue")
-			    .AddNext<A>("Cat")
-			    .AddNext<B>("Dog")
-			    .AddNext<C>("Cat")
-			    .AddNext<X>("Cat")
-			    .AddNext<Y>("Dog")
+			    .AddNext<A>().IntoProfile("Cat")
+			    .AddNext<B>().IntoProfile("Dog")
+			    .AddNext<C>().IntoProfile("Cat")
+			    .AddNext<X>().IntoProfile("Cat")
+			    .AddNext<Y>().IntoProfile("Dog")
 			    .End();
 
 		    using (var container = new Container(registry))
@@ -614,12 +613,12 @@ namespace SeqMap.Tests
 		    registry.ForEnumerabletOf<I>()
 			    .UseSequence()
 			    .NextIsNamed("NNN")
-			    .NextIsNamed("SSS", "Dog")
+			    .NextIsNamed("SSS").WhenProfileIs("Dog")
 			    .NextIsNamed("PPP")
 			    .NextIsNamed("SSS")
 			    .NextIsNamed("SSS")
-			    .NextIsNamed("QQQ", "Dog")
-			    .End();
+			    .NextIsNamed("QQQ").WhenProfileIs("Dog")
+				.End();
 
 			using (var container = new Container(registry))
 			using (var dogContainer = container.GetNestedContainer("Dog"))
@@ -653,26 +652,26 @@ namespace SeqMap.Tests
 			registry.ForEnumerabletOf<I>()
 			    .UseSequence()
 			    .NextIsNamed("NNN")
-			    .NextIsNamed("SSS", "Dog")
-			    .NextIsNamed("PPP", "Dog", "Cat")
-			    .NextIsNamed("SSS", "Dog", "Cat")
+			    .NextIsNamed("SSS").WhenProfileIs("Dog")
+			    .NextIsNamed("PPP").WhenProfileIsIn("Dog", "Cat")
+			    .NextIsNamed("SSS").WhenProfileIsIn("Dog", "Cat")
 			    .NextIsNamed("SSS")
-			    .NextIsNamed("QQQ", "Dog")
+			    .NextIsNamed("QQQ").WhenProfileIs("Dog")
 				.NextIsNamed("PPP")
 				.NextIsNamed("MMM")
-				.NextIsNamed("SSS", "Dog", "Cat")
-				.NextIsNamed("TTT", "Dog", "Cat")
-				.NextIsNamed("XXX", "Dog")
-				.NextIsNamed("SSS", "Cat")
+				.NextIsNamed("SSS").WhenProfileIsIn("Dog", "Cat")
+				.NextIsNamed("TTT").WhenProfileIsIn("Dog", "Cat")
+				.NextIsNamed("XXX").WhenProfileIs("Dog")
+				.NextIsNamed("SSS").WhenProfileIs("Cat")
 				.NextIsNamed("PPP")
 				.NextIsNamed("TTT")
-				.NextIsNamed("TTT", "Cat")
+				.NextIsNamed("TTT").WhenProfileIs("Cat")
 				.NextIsNamed("TTT")
-				.NextIsNamed("SSS", "Dog")
+				.NextIsNamed("SSS").WhenProfileIs("Dog")
 				.NextIsNamed("XXX")
 				.NextIsNamed("PPP")
-				.NextIsNamed("SSS", "Dog")
-				.NextIsNamed("MMM", "Dog", "Cat")
+				.NextIsNamed("SSS").WhenProfileIs("Dog")
+				.NextIsNamed("MMM").WhenProfileIsIn("Dog", "Cat")
 				.End();
 
 			using (var container = new Container(registry))

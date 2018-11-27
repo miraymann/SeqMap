@@ -12,21 +12,15 @@ namespace SeqMap
 
 		public interface ISetNextItemWizardStep<in TContract>
 		{
-			IChooseCtorParamOrSetNextItemWizardStep<TContract> AddNext<TImplementation>(
-				params string[] profiles)
+			ISetProfileOrChooseCtorParamOrSetNextItemWizardStep<TContract> AddNext<TImplementation>()
 				where TImplementation : TContract;
 
-			ISetNextItemWizardStep<TContract> NextIs<TImplementation>(
-				params string[] profiles)
+			ISetProfilesOrNextItemWitzardStep<TContract> NextIs<TImplementation>()
 				where TImplementation : TContract;
-			
-			ISetNextItemWizardStep<TContract> NextIsNamed(
-				string name,
-				params string[] profiles);
 
-			ISetNextItemWizardStep<TContract> NextIsNamed<TImplementation>(
-				string name,
-				params string[] profiles)
+			ISetProfilesOrNextItemWitzardStep<TContract> NextIsNamed(string name);
+
+			ISetProfilesOrNextItemWitzardStep<TContract> NextIsNamed<TImplementation>(string name)
 				where TImplementation : TContract;
 
 			void End();
@@ -36,6 +30,28 @@ namespace SeqMap
 			: ISetNextItemWizardStep<TContract>
 		{
 			ISetNextItemWizardStep<TContract> Named(string name);
+		}
+
+		public interface ISetProfilesOrNextItemWitzardStep<in TContract>
+			: ISetNextItemWizardStep<TContract>
+		{
+			ISetNextItemWizardStep<TContract> WhenProfileIs(string profile);
+
+			ISetNextItemWizardStep<TContract> WhenProfileIsIn(
+				string firtsProfile,
+				string secondProfile,
+				params string[] otherProfiles);
+		}
+
+		public interface ISetProfileOrChooseCtorParamOrSetNextItemWizardStep<in TContract>
+			: IChooseCtorParamOrSetNextItemWizardStep<TContract>
+		{
+			IChooseCtorParamOrSetNextItemWizardStep<TContract> IntoProfile(string profile);
+
+			IChooseCtorParamOrSetNextItemWizardStep<TContract> IntoProfiles(
+				string firtsProfile,
+				string secondProfile,
+				params string[] otherProfiles);
 		}
 
 		public interface IChooseCtorParamOrSetNextItemWizardStep<in TContract>

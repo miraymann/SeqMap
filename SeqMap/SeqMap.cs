@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using StructureMap;
@@ -14,9 +15,14 @@ namespace SeqMap
 		private class Wizard<TContract>
 			: IAddOrUseWizardStep<TContract>
 			, ISetNameOrNextItemWizardStep<TContract>
+			, ISetProfilesOrNextItemWitzardStep<TContract>
 			, ISetNextItemWizardStep<TContract>
 		{
 			private const string DefaultProfile = "DEFAULT_PROFILE";
+
+			private delegate void RegisterItem(
+				string itemName, 
+				IProfileRegistry registry);
 
 			private class State
 			{
@@ -27,6 +33,9 @@ namespace SeqMap
 				public string SequenceName { get; set; }
 				public RegistrationType RegistartionType { get; set; }
 				public int LastProfileIndex { get; set; }
+
+				public RegisterItem RegisterItem { get; set; }
+				public ProfilesCollection Profiles { get; set; }
 			}
 
 			private readonly State _state;
@@ -66,52 +75,63 @@ namespace SeqMap
 				return new Wizard<TContract>(_state);
 			}
 
-			public IChooseCtorParamOrSetNextItemWizardStep<TContract> AddNext<TImplementation>(
-				params string[] profiles)
+			public ISetProfileOrChooseCtorParamOrSetNextItemWizardStep<TContract> AddNext<TImplementation>()
+				where TImplementation : TContract =>
+					new ChooseCtorParamWizardStep<TImplementation>(
+						new ChooseCtorParamWizardStep<TImplementation>.State
+						{
+							MapCtorParams = instance => instance,
+							Base = _state
+						});
+			
+			public ISetProfilesOrNextItemWitzardStep<TContract> NextIs<TImplementation>() 
 				where TImplementation : TContract
 			{
-				return new ChooseCtorParamWizardStep<TImplementation>(
-					new ChooseCtorParamWizardStep<TImplementation>.State
-					{
-						CurrentItemProfiles = profiles,
-						InitCtorParams = o => o,
-						Base = _state
-					});
-			}
+				SetNextItem(_state);
 
-			public ISetNextItemWizardStep<TContract> NextIs<TImplementation>(
-				params string[] profiles) 
-				where TImplementation : TContract
-			{
-				void Register(string itemName, IProfileRegistry registry) =>
-					 registry.For<TContract>()
-					 		 .Add(context => context.GetInstance<TImplementation>())
-							 .Named(itemName);
+				_state.RegisterItem = (itemName, registry) =>
+					registry.For<TContract>()
+						    .Add(context => context.GetInstance<TImplementation>())
+						    .Named(itemName);
 
-				SetNext(_state, profiles, Register);
 				return new Wizard<TContract>(_state);
 			}
 
-			public ISetNextItemWizardStep<TContract> NextIsNamed(
-				string name, params string[] profiles) =>
-				NextIsNamed<TContract>(name, profiles);
+			public ISetProfilesOrNextItemWitzardStep<TContract> NextIsNamed(string name) =>
+				NextIsNamed<TContract>(name);
 
-			public ISetNextItemWizardStep<TContract> NextIsNamed<TImplementation>(
-				string name, 
-				params string[] profiles) 
+			public ISetProfilesOrNextItemWitzardStep<TContract> NextIsNamed<TImplementation>(string name) 
 				where TImplementation : TContract
 			{
-				void Register(string itemName, IProfileRegistry registry) =>
-					registry.For<TContract>()
-						.Add(context => context.GetInstance<TImplementation>(name))
-						.Named(itemName);
+				SetNextItem(_state);
 
-				SetNext(_state, profiles, Register);
+				_state.RegisterItem = (itemName, registry) =>
+					registry.For<TContract>()
+						    .Add(context => context.GetInstance<TImplementation>(name))
+						    .Named(itemName);
+
+				return new Wizard<TContract>(_state);
+			}
+
+			public ISetNextItemWizardStep<TContract> WhenProfileIs(string profile)
+			{
+				_state.Profiles = new ProfilesCollection(profile);
+				return new Wizard<TContract>(_state);
+			}
+
+			public ISetNextItemWizardStep<TContract> WhenProfileIsIn(
+				string firtsProfile, 
+				string secondProfile, 
+				params string[] otherProfiles)
+			{
+				_state.Profiles = new ProfilesCollection(firtsProfile, secondProfile, otherProfiles);
 				return new Wizard<TContract>(_state);
 			}
 
 			public void End()
 			{
+				SetNextItem(_state);
+
 				var defaultProfileMask = 1UL << _state.ProfileIndexes[DefaultProfile];
 				CreateRegistrator(defaultProfileMask)(_state.Registry);
 
@@ -159,45 +179,47 @@ namespace SeqMap
 					state.ProfileIndexes.Add(profileName, state.LastProfileIndex ++);
 			}
 
-			private static void SetNext(
-				State state,
-				string[] profiles, 
-				Action<string, IProfileRegistry> registerItem)
+			private static void SetNextItem(State state)
 			{
-				var newItem = new ItemMap
+				if (state.RegisterItem == null) return;
+
+				var item = new ItemMap
 				{
 					Name = Guid.NewGuid().ToString(),
 					Profiling = 0UL
 				};
 
-				void MapHandler(string profileName, IProfileRegistry profileRegistry)
+				Action<IProfileRegistry> MapItemIn(string profile) => registry =>
 				{
-					registerItem(newItem.Name, profileRegistry);
-					IndexProfile(state, profileName);
-					newItem.Profiling |= 1UL << state.ProfileIndexes[profileName];
-				}
+					state.RegisterItem(item.Name, registry);
+					IndexProfile(state, profile);
+					item.Profiling |= 1UL << state.ProfileIndexes[profile];
+				};
 
-				if (!profiles.Any())
-					MapHandler(DefaultProfile, state.Registry);
+				if (state.Profiles == null)
+					MapItemIn(DefaultProfile)(state.Registry);
 
-				else foreach (var name in profiles)
-						state.Registry.Profile(name, registry => MapHandler(name, registry));
+				else foreach (var profile in state.Profiles)
+					state.Registry.Profile(profile, MapItemIn(profile));
 
-				state.ItemsMap.Add(newItem);
+				state.ItemsMap.Add(item);
+
+				state.RegisterItem = null;
+				state.Profiles = null;
 			}
 
 			private class ChooseCtorParamWizardStep<TImplementation>
-				: IChooseCtorParamOrSetNextItemWizardStep<TContract>
+				: ISetProfileOrChooseCtorParamOrSetNextItemWizardStep<TContract>
+				, IChooseCtorParamOrSetNextItemWizardStep<TContract>
 				where TImplementation : TContract
 			{
 				public delegate SmartInstance<TImplementation, TContract>
-					InitCtorParams(SmartInstance<TImplementation, TContract> instance);
+					MapCtorParams(SmartInstance<TImplementation, TContract> instance);
 
 				public class State
 				{
 					public Wizard<TContract>.State Base { get; set; }
-					public InitCtorParams InitCtorParams { get; set; }
-					public string[] CurrentItemProfiles { get; set; }
+					public MapCtorParams MapCtorParams { get; set; }
 					public Action Flush { get; set; }
 				}
 
@@ -207,49 +229,57 @@ namespace SeqMap
 				{
 					_state = state;
 
-					void Register(string itemName, IProfileRegistry registry) =>
-						_state.InitCtorParams(registry.For<TContract>().Add<TImplementation>())
+					_state.Base.RegisterItem = (itemName, registry) =>
+						_state.MapCtorParams(registry.For<TContract>().Add<TImplementation>())
 							  .Named(itemName);
-					
-					_state.Flush = () =>
-						SetNext(_state.Base, _state.CurrentItemProfiles, Register);
+
+					_state.Flush = () => SetNextItem(_state.Base);
 				}
 
-				public IChooseCtorParamOrSetNextItemWizardStep<TContract>
-					AddNext<TNextImplementation>(params string[] profiles)
+				public ISetProfileOrChooseCtorParamOrSetNextItemWizardStep<TContract> AddNext<TNextImplementation>()
 					where TNextImplementation : TContract
 				{
 					_state.Flush();
 					return new Wizard<TContract>(_state.Base)
-						.AddNext<TNextImplementation>(profiles);
+						.AddNext<TNextImplementation>();
 				}
 
-				public ISetNextItemWizardStep<TContract>
-					NextIs<TNextImplementation>(params string[] profiles)
+				public ISetProfilesOrNextItemWitzardStep<TContract> NextIs<TNextImplementation>()
 					where TNextImplementation : TContract
 				{
 					_state.Flush();
 					return new Wizard<TContract>(_state.Base)
-						.NextIs<TNextImplementation>(profiles);
+						.NextIs<TNextImplementation>();
 				}
 
-				public ISetNextItemWizardStep<TContract> NextIsNamed(
-					string name, 
-					params string[] profiles)
+				public ISetProfilesOrNextItemWitzardStep<TContract> NextIsNamed(string name)
 				{
 					_state.Flush();
 					return new Wizard<TContract>(_state.Base)
-						.NextIsNamed(name, profiles);
+						.NextIsNamed(name);
 				}
 
-				public ISetNextItemWizardStep<TContract> NextIsNamed<TNextImplementation>(
-					string name, 
-					params string[] profiles) 
+				public ISetProfilesOrNextItemWitzardStep<TContract> NextIsNamed<TNextImplementation>(string name) 
 					where TNextImplementation : TContract
 				{
 					_state.Flush();
 					return new Wizard<TContract>(_state.Base)
-						.NextIsNamed<TNextImplementation>(name, profiles);
+						.NextIsNamed<TNextImplementation>(name);
+				}
+
+				public IChooseCtorParamOrSetNextItemWizardStep<TContract> IntoProfile(string profile)
+				{
+					_state.Base.Profiles = new ProfilesCollection(profile);
+					return new ChooseCtorParamWizardStep<TImplementation>(_state);
+				}
+
+				public IChooseCtorParamOrSetNextItemWizardStep<TContract> IntoProfiles(
+					string firtsProfile,
+					string secondProfile,
+					params string[] otherProfiles)
+				{
+					_state.Base.Profiles = new ProfilesCollection(firtsProfile, secondProfile, otherProfiles);
+					return new ChooseCtorParamWizardStep<TImplementation>(_state);
 				}
 
 				public void End()
@@ -274,6 +304,7 @@ namespace SeqMap
 							ChooseCtorParam = instance => instance.Ctor<TParam>(paramName),
 							Base = _state
 						});
+
 
 				private class SetCtorArgWizardStep<TParam>
 					: ISetCtorArgWizardStep<TContract, TParam>
@@ -322,12 +353,44 @@ namespace SeqMap
 						return new ChooseCtorParamWizardStep<TImplementation>(_state.Base);
 					}
 
-					private void SetParam(InitCtorParam initCtorParam)
+					private void SetParam(InitCtorParam mapCtorParam)
 					{
-						var initPreviousCtorParams = _state.Base.InitCtorParams;
-						_state.Base.InitCtorParams = o =>
-							initCtorParam(_state.ChooseCtorParam(initPreviousCtorParams(o)));
+						var mapCtorParams = _state.Base.MapCtorParams;
+						_state.Base.MapCtorParams = o =>
+							mapCtorParam(_state.ChooseCtorParam(mapCtorParams(o)));
 					}
+				}
+			}
+
+			private class ProfilesCollection : IEnumerable<string>
+			{
+				private readonly string _head, _second;
+				private readonly string[] _tail;
+
+				public ProfilesCollection(
+					string first = null,
+					string second = null,
+					params string[] others)
+				{
+					_head = first;
+					_second = second;
+					_tail = others;
+				}
+
+				public IEnumerator<string> GetEnumerator()
+				{
+					yield return _head ?? DefaultProfile;
+					if (_second != null)
+					{
+						yield return _second;
+						foreach (var profile in _tail)
+							yield return profile;
+					}
+				}
+
+				IEnumerator IEnumerable.GetEnumerator()
+				{
+					return GetEnumerator();
 				}
 			}
 		}
