@@ -1415,50 +1415,27 @@ namespace SeqMap.Tests
 		}
 
 		[Test]
-	    public void NextIs_Args_TwoProfiles_SameSequencesButDifferentArgsOfItems_Test()
+	    public void NextIs_Args_SingleProfiles_SameSequencesButDifferentArgsOfItems_Test()
 	    {
 		    var registry = new Registry();
 
-		    registry
-			    .For<Arg1>().Use<Arg1>()
-			    .Ctor<string>().Is("1");
-		    registry
-			    .For<Arg2>().Use<Arg2>()
-			    .Ctor<string>().Is("2");
-		    registry
-			    .For<Arg3>().Use<Arg3>()
-			    .Ctor<string>().Is("3");
+		    registry.For<Arg1>().Use<Arg1>().Ctor<string>().Is("1");
+		    registry.For<Arg2>().Use<Arg2>().Ctor<string>().Is("2");
+		    registry.For<Arg3>().Use<Arg3>().Ctor<string>().Is("3");
 
-		    registry
-			    .For<Arg1A>().Use<Arg1A>()
-			    .Ctor<string>().Is("1A");
-		    registry
-			    .For<Arg2A>().Use<Arg2A>()
-			    .Ctor<string>().Is("2A");
-		    registry
-			    .For<Arg3A>().Use<Arg3A>()
-			    .Ctor<string>().Is("3A");
+		    registry.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A");
+		    registry.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A");
+		    registry.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A");
 
-		    registry
-			    .For<Arg1B>().Use<Arg1B>()
-			    .Ctor<string>().Is("1B");
-		    registry
-			    .For<Arg2B>().Use<Arg2B>()
-			    .Ctor<string>().Is("2B");
-		    registry
-			    .For<Arg3B>().Use<Arg3B>()
-			    .Ctor<string>().Is("3B");
+		    registry.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B");
+		    registry.For<Arg2B>().Use<Arg2B>().Ctor<string>().Is("2B");
+		    registry.For<Arg3B>().Use<Arg3B>().Ctor<string>().Is("3B");
 
-		    registry
-			    .For<Arg1C>().Use<Arg1C>()
-			    .Ctor<string>().Is("1C");
-		    registry
-			    .For<Arg2C>().Use<Arg2C>()
-			    .Ctor<string>().Is("2C");
-		    registry
-			    .For<Arg3C>().Use<Arg3C>()
-			    .Ctor<string>().Is("3C");
-			
+		    registry.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C");
+		    registry.For<Arg2C>().Use<Arg2C>().Ctor<string>().Is("2C");
+		    registry.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C");
+
+
 			registry.For<I>().Add<WithArgs>();
 		    registry.For<I>().Add<WithArgsA>();
 		    registry.For<I>().Add<WithArgsB>();
@@ -1466,26 +1443,14 @@ namespace SeqMap.Tests
 
 			registry.Profile("Dog", profile =>
 			{
-				profile
-					.For<Arg1A>().Use<Arg1A>()
-					.Ctor<string>().Is("1A_Dog");
-				profile
-					.For<Arg2A>().Use<Arg2A>()
-					.Ctor<string>().Is("2A_Dog");
-				profile
-					.For<Arg3A>().Use<Arg3A>()
-					.Ctor<string>().Is("3A_Dog");
+				profile.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A_Dog");
+				profile.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A_Dog");
+				profile.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A_Dog");
 
-				profile
-					.For<Arg1B>().Use<Arg1B>()
-					.Ctor<string>().Is("1B_Dog");
+				profile.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B_Dog");
 
-				profile
-					.For<Arg1C>().Use<Arg1C>()
-					.Ctor<string>().Is("1C_Dog");
-				profile
-					.For<Arg3C>().Use<Arg3C>()
-					.Ctor<string>().Is("3C_Dog");
+				profile.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C_Dog");
+				profile.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C_Dog");
 			});
 			
 			registry.ForEnumerabletOf<I>()
@@ -1533,49 +1498,25 @@ namespace SeqMap.Tests
 		}
 
 		[Test]
-		public void NextIs_Args_TwoProfiles_DifferentSequencesAndDifferentArgsOfItems_Test()
+		public void NextIs_Args_SingleProfiles_DifferentSequencesAndDifferentArgsOfItems_Test()
 		{
 			var registry = new Registry();
 
-			registry
-				.For<Arg1>().Use<Arg1>()
-				.Ctor<string>().Is("1");
-			registry
-				.For<Arg2>().Use<Arg2>()
-				.Ctor<string>().Is("2");
-			registry
-				.For<Arg3>().Use<Arg3>()
-				.Ctor<string>().Is("3");
+			registry.For<Arg1>().Use<Arg1>().Ctor<string>().Is("1");
+			registry.For<Arg2>().Use<Arg2>().Ctor<string>().Is("2");
+			registry.For<Arg3>().Use<Arg3>().Ctor<string>().Is("3");
 
-			registry
-				.For<Arg1A>().Use<Arg1A>()
-				.Ctor<string>().Is("1A");
-			registry
-				.For<Arg2A>().Use<Arg2A>()
-				.Ctor<string>().Is("2A");
-			registry
-				.For<Arg3A>().Use<Arg3A>()
-				.Ctor<string>().Is("3A");
+			registry.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A");
+			registry.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A");
+			registry.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A");
 
-			registry
-				.For<Arg1B>().Use<Arg1B>()
-				.Ctor<string>().Is("1B");
-			registry
-				.For<Arg2B>().Use<Arg2B>()
-				.Ctor<string>().Is("2B");
-			registry
-				.For<Arg3B>().Use<Arg3B>()
-				.Ctor<string>().Is("3B");
+			registry.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B");
+			registry.For<Arg2B>().Use<Arg2B>().Ctor<string>().Is("2B");
+			registry.For<Arg3B>().Use<Arg3B>().Ctor<string>().Is("3B");
 
-			registry
-				.For<Arg1C>().Use<Arg1C>()
-				.Ctor<string>().Is("1C");
-			registry
-				.For<Arg2C>().Use<Arg2C>()
-				.Ctor<string>().Is("2C");
-			registry
-				.For<Arg3C>().Use<Arg3C>()
-				.Ctor<string>().Is("3C");
+			registry.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C");
+			registry.For<Arg2C>().Use<Arg2C>().Ctor<string>().Is("2C");
+			registry.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C");
 
 			registry.For<I>().Add<WithArgs>();
 			registry.For<I>().Add<WithArgsA>();
@@ -1584,26 +1525,14 @@ namespace SeqMap.Tests
 
 			registry.Profile("Dog", profile =>
 			{
-				profile
-					.For<Arg1A>().Use<Arg1A>()
-					.Ctor<string>().Is("1A_Dog");
-				profile
-					.For<Arg2A>().Use<Arg2A>()
-					.Ctor<string>().Is("2A_Dog");
-				profile
-					.For<Arg3A>().Use<Arg3A>()
-					.Ctor<string>().Is("3A_Dog");
+				profile.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A_Dog");
+				profile.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A_Dog");
+				profile.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A_Dog");
 
-				profile
-					.For<Arg1B>().Use<Arg1B>()
-					.Ctor<string>().Is("1B_Dog");
+				profile.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B_Dog");
 
-				profile
-					.For<Arg1C>().Use<Arg1C>()
-					.Ctor<string>().Is("1C_Dog");
-				profile
-					.For<Arg3C>().Use<Arg3C>()
-					.Ctor<string>().Is("3C_Dog");
+				profile.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C_Dog");
+				profile.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C_Dog");
 			});
 
 			registry.ForEnumerabletOf<I>()
@@ -1646,6 +1575,215 @@ namespace SeqMap.Tests
 						"[1A_Dog|2A_Dog|3A_Dog][1|2|3]1C_Dog[1B_Dog|2B|3B]2C2B2A_Dog1A_Dog",
 						dogSequenceView,
 						"Dog Profile");
+				});
+			}
+		}
+
+
+		[Test]
+		public void NextIs_Args_TwoProfiles_SameSequencesButDifferentArgsOfItems_Test()
+		{
+			var registry = new Registry();
+
+			registry.For<Arg1>().Use<Arg1>().Ctor<string>().Is("1");
+			registry.For<Arg2>().Use<Arg2>().Ctor<string>().Is("2");
+			registry.For<Arg3>().Use<Arg3>().Ctor<string>().Is("3");
+
+			registry.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A");
+			registry.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A");
+			registry.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A");
+
+			registry.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B");
+			registry.For<Arg2B>().Use<Arg2B>().Ctor<string>().Is("2B");
+			registry.For<Arg3B>().Use<Arg3B>().Ctor<string>().Is("3B");
+
+			registry.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C");
+			registry.For<Arg2C>().Use<Arg2C>().Ctor<string>().Is("2C");
+			registry.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C");
+
+
+			registry.For<I>().Add<WithArgs>();
+			registry.For<I>().Add<WithArgsA>();
+			registry.For<I>().Add<WithArgsB>();
+			registry.For<I>().Add<WithArgsC>();
+
+			registry.Profile("Dog", profile =>
+			{
+				profile.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A_Dog");
+				profile.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A_Dog");
+				profile.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A_Dog");
+
+				profile.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B_Dog");
+
+				profile.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C_Dog");
+				profile.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C_Dog");
+			});
+
+			registry.Profile("Cat", profile =>
+			{
+				profile.For<Arg3>().Use<Arg3>().Ctor<string>().Is("3_Cat");
+
+				profile.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A_Cat");
+
+				profile.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B_Cat");
+				profile.For<Arg2B>().Use<Arg2B>().Ctor<string>().Is("2B_Cat");
+
+				profile.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C_Cat");
+			});
+
+			registry.ForEnumerabletOf<I>()
+				.UseSequence()
+				.NextIs<Arg1>()
+				.NextIs<Arg1A>()
+				.NextIs<Arg1C>()
+				.NextIs<WithArgs>()
+				.NextIs<WithArgsB>()
+				.NextIs<WithArgsC>()
+				.NextIs<Arg1B>()
+				.NextIs<WithArgsA>()
+				.NextIs<WithArgs>()
+				.NextIs<Arg1C>()
+				.NextIs<WithArgsB>()
+				.NextIs<Arg2C>()
+				.NextIs<Arg2B>()
+				.NextIs<Arg2A>()
+				.NextIs<Arg1A>()
+				.End();
+
+			using (var container = new Container(registry))
+			using (var dogContainer = container.GetNestedContainer("Dog"))
+			using (var catContainer = container.GetNestedContainer("Cat"))
+			{
+				var sequence = container.GetInstance<IEnumerable<I>>();
+				var dogSequence = dogContainer.GetInstance<IEnumerable<I>>();
+				var catSequence = catContainer.GetInstance<IEnumerable<I>>();
+
+				var defaultSequenceView = SelectViewFrom(sequence);
+				var dogSequenceView = SelectViewFrom(dogSequence);
+				var catSequenceView = SelectViewFrom(catSequence);
+
+				Assert.Multiple(() =>
+				{
+					Assert.AreEqual(
+						"11A1C[1|2|3][1B|2B|3B][1C|2C|3C]1B[1A|2A|3A][1|2|3]1C[1B|2B|3B]2C2B2A1A",
+						defaultSequenceView,
+						"Default Profile");
+
+					Assert.AreEqual(
+						"11A_Dog1C_Dog[1|2|3][1B_Dog|2B|3B][1C_Dog|2C|3C_Dog]1B_Dog" +
+						"[1A_Dog|2A_Dog|3A_Dog][1|2|3]1C_Dog[1B_Dog|2B|3B]2C2B2A_Dog1A_Dog",
+						dogSequenceView,
+						"Dog Profile");
+
+					Assert.AreEqual(
+						"11A_Cat1C[1|2|3_Cat][1B_Cat|2B_Cat|3B][1C|2C|3C_Cat]1B_Cat" +
+						"[1A_Cat|2A|3A][1|2|3_Cat]1C[1B_Cat|2B_Cat|3B]2C2B_Cat2A1A_Cat",
+						catSequenceView,
+						"Cat Profile");
+				});
+			}
+		}
+
+		[Test]
+		public void NextIs_Args_TwoProfiles_DifferentSequencesAndDifferentArgsOfItems_Test()
+		{
+			var registry = new Registry();
+
+			registry.For<Arg1>().Use<Arg1>().Ctor<string>().Is("1");
+			registry.For<Arg2>().Use<Arg2>().Ctor<string>().Is("2");
+			registry.For<Arg3>().Use<Arg3>().Ctor<string>().Is("3");
+
+			registry.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A");
+			registry.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A");
+			registry.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A");
+
+			registry.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B");
+			registry.For<Arg2B>().Use<Arg2B>().Ctor<string>().Is("2B");
+			registry.For<Arg3B>().Use<Arg3B>().Ctor<string>().Is("3B");
+
+			registry.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C");
+			registry.For<Arg2C>().Use<Arg2C>().Ctor<string>().Is("2C");
+			registry.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C");
+
+			registry.For<I>().Add<WithArgs>();
+			registry.For<I>().Add<WithArgsA>();
+			registry.For<I>().Add<WithArgsB>();
+			registry.For<I>().Add<WithArgsC>();
+
+			registry.Profile("Dog", profile =>
+			{
+				profile.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A_Dog");
+				profile.For<Arg2A>().Use<Arg2A>().Ctor<string>().Is("2A_Dog");
+				profile.For<Arg3A>().Use<Arg3A>().Ctor<string>().Is("3A_Dog");
+
+				profile.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B_Dog");
+
+				profile.For<Arg1C>().Use<Arg1C>().Ctor<string>().Is("1C_Dog");
+				profile.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C_Dog");
+			});
+
+			registry.Profile("Cat", profile =>
+			{
+				profile.For<Arg3>().Use<Arg3>().Ctor<string>().Is("3_Cat");
+
+				profile.For<Arg1A>().Use<Arg1A>().Ctor<string>().Is("1A_Cat");
+
+				profile.For<Arg1B>().Use<Arg1B>().Ctor<string>().Is("1B_Cat");
+				profile.For<Arg2B>().Use<Arg2B>().Ctor<string>().Is("2B_Cat");
+
+				profile.For<Arg3C>().Use<Arg3C>().Ctor<string>().Is("3C_Cat");
+			});
+
+			registry.ForEnumerabletOf<I>()
+				.UseSequence()
+				.NextIs<Arg1>()
+				.NextIs<Arg1A>().WhenProfileIsIn("Cat", "Dog")
+				.NextIs<Arg1A>().WhenProfileIsIn("Dog", "Cat")
+				.NextIs<Arg1C>()
+				.NextIs<WithArgs>()
+				.NextIs<WithArgsB>().WhenProfileIs("Cat")
+				.NextIs<WithArgsC>().WhenProfileIs("Dog")
+				.NextIs<Arg1B>()
+				.NextIs<WithArgsA>()
+				.NextIs<WithArgs>()
+				.NextIs<Arg1C>()
+				.NextIs<WithArgsB>().WhenProfileIs("Dog")
+				.NextIs<Arg2C>().WhenProfileIs("Cat")
+				.NextIs<Arg2B>().WhenProfileIs("Cat")
+				.NextIs<Arg2A>()
+				.NextIs<Arg1A>().WhenProfileIs("Dog")
+				.End();
+
+			using (var container = new Container(registry))
+			using (var dogContainer = container.GetNestedContainer("Dog"))
+			using (var catContainer = container.GetNestedContainer("Cat"))
+			{
+				var sequence = container.GetInstance<IEnumerable<I>>();
+				var dogSequence = dogContainer.GetInstance<IEnumerable<I>>();
+				var catSequence = catContainer.GetInstance<IEnumerable<I>>();
+
+				var defaultSequenceView = SelectViewFrom(sequence);
+				var dogSequenceView = SelectViewFrom(dogSequence);
+				var catSequenceView = SelectViewFrom(catSequence);
+
+				Assert.Multiple(() =>
+				{
+					Assert.AreEqual(
+						"11C[1|2|3]1B[1A|2A|3A][1|2|3]1C2A",
+						defaultSequenceView,
+						"Default Profile");
+
+					Assert.AreEqual(
+						"11A_Dog1A_Dog1C_Dog[1|2|3][1C_Dog|2C|3C_Dog]1B_Dog[1A_Dog|2A_Dog|" +
+						"3A_Dog][1|2|3]1C_Dog[1B_Dog|2B|3B]2A_Dog1A_Dog",
+						dogSequenceView,
+						"Dog Profile");
+
+					Assert.AreEqual(
+						"11A_Cat1A_Cat1C[1|2|3_Cat][1B_Cat|2B_Cat|3B]1B_Cat[1A_Cat|2A|3A]" + 
+						"[1|2|3_Cat]1C2C2B_Cat2A",
+						catSequenceView,
+						"Cat Profile");
 				});
 			}
 		}
@@ -1738,6 +1876,131 @@ namespace SeqMap.Tests
 				});
 			}
 	    }
+
+	    [Test]
+	    public void AddNext_CtorIsT_NoProfileTest()
+	    {
+		    var registry = new Registry();
+
+		    registry.For<Arg1>().Add<Arg1A>().Ctor<string>().Is("1A");
+		    registry.For<Arg2>().Add<Arg2A>().Ctor<string>().Is("2A");
+		    registry.For<Arg3>().Add<Arg3A>().Ctor<string>().Is("3A").Named("3A_NAME");
+
+		    registry.For<Arg1>().Add<Arg1B>().Ctor<string>().Is("1B");
+		    registry.For<Arg2>().Add<Arg2B>().Ctor<string>().Is("2B").Named("2B_NAME");
+		    registry.For<Arg3>().Add<Arg3B>().Ctor<string>().Is("3B");
+
+		    registry.For<Arg1>().Add<Arg1C>().Ctor<string>().Is("1C").Named("1C_NAME");
+		    registry.For<Arg2>().Add<Arg2C>().Ctor<string>().Is("2C");
+		    registry.For<Arg3>().Add<Arg3C>().Ctor<string>().Is("3C");
+
+		    registry.ForEnumerabletOf<I>()
+			    .UseSequence()
+			    .AddNext<WithArgs>()
+					.Ctor<Arg1>().IsNamedInstance("1C_NAME")
+					.Ctor<Arg2>().IsNamedInstance("2B_NAME")
+					.Ctor<Arg3>().Is<Arg3B>()
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1B>()
+					.Ctor<Arg2>().Is<Arg2C>()
+					.Ctor<Arg3>().Is<Arg3B>()
+			    .AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1A>()
+					.Ctor<Arg2>().Is<Arg2A>()
+					.Ctor<Arg3>().Is<Arg3C>()
+			    .AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1B>()
+					.Ctor<Arg2>().Is<Arg2B>()
+					.Ctor<Arg3>().Is<Arg3A>()
+			    .AddNext<WithArgs>()
+					.Ctor<Arg1>().IsNamedInstance("1C_NAME")
+					.Ctor<Arg2>().IsNamedInstance("2B_NAME")
+					.Ctor<Arg3>().IsNamedInstance("2A_NAME")
+			    .AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1A>()
+					.Ctor<Arg2>().IsNamedInstance("2B_NAME")
+					.Ctor<Arg3>().Is<Arg3C>()
+			    .End();
+
+		    using (var container = new Container(registry))
+		    {
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    var sequenceView = SelectViewFrom(sequence);
+
+			    Assert.AreEqual(
+				    "[1C|2B|3B][1B|2C|3B]AXCB[1A|2A|3C]A[1B|2B|3A]C[1C|2B|2A]AX[1A|2B|3C]BO",
+				    sequenceView);
+		    }
+		}
+
+		[Test]
+	    public void AddNext_NextIs_WithCtors_NoProfileTest()
+	    {
+		    var registry = new Registry();
+
+		    registry.For<Arg1>().Add<Arg1A>().Ctor<string>().Is("1A");
+		    registry.For<Arg2>().Add<Arg2A>().Ctor<string>().Is("2A");
+		    registry.For<Arg3>().Add<Arg3A>().Ctor<string>().Is("3A").Named("3A_NAME");
+
+		    registry.For<Arg1>().Add<Arg1B>().Ctor<string>().Is("1B");
+		    registry.For<Arg2>().Add<Arg2B>().Ctor<string>().Is("2B").Named("2B_NAME");
+			registry.For<Arg3>().Add<Arg3B>().Ctor<string>().Is("3B");
+
+		    registry.For<Arg1>().Add<Arg1C>().Ctor<string>().Is("1C").Named("1C_NAME");
+		    registry.For<Arg2>().Add<Arg2C>().Ctor<string>().Is("2C");
+			registry.For<Arg3>().Add<Arg3C>().Ctor<string>().Is("3C");
+
+		    registry.For<I>().Add<A>();
+		    registry.For<I>().Add<B>();
+		    registry.For<I>().Add<C>();
+
+		    registry.For<I>().Add<D>().Named("D");
+		    registry.For<I>().Add<F>().Named("F");
+
+			registry.ForEnumerabletOf<I>()
+				.UseSequence()
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1B>()
+					.Ctor<Arg2>().Is<Arg2C>()
+					.Ctor<Arg3>().Is<Arg3B>()
+				.NextIs<A>()
+				.AddNext<X>()
+				.NextIs<C>()
+				.NextIs<B>()
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1A>()
+					.Ctor<Arg2>().Is<Arg2A>()
+					.Ctor<Arg3>().Is<Arg3C>()
+				.NextIs<A>()
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1B>()
+					.Ctor<Arg2>().Is<Arg2B>()
+					.Ctor<Arg3>().Is<Arg3A>()
+				.NextIsNamed("C")
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().IsNamedInstance("1C_NAME")
+					.Ctor<Arg2>().IsNamedInstance("2B_NAME")
+					.Ctor<Arg3>().IsNamedInstance("2A_NAME")
+				.NextIs<A>()
+				.AddNext<X>()
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1A>()
+					.Ctor<Arg2>().IsNamedInstance("2B_NAME")
+					.Ctor<Arg3>().Is<Arg3C>()
+				.NextIs<B>()
+				.AddNext<O>()
+				.End();
+
+		    using (var container = new Container(registry))
+		    {
+			    var sequence = container.GetInstance<IEnumerable<I>>();
+			    var sequenceView = SelectViewFrom(sequence);
+
+			    Assert.AreEqual(
+				    "[1B|2C|3B]AXCB[1A|2A|3C]A[1B|2B|3A]C[1C|2B|2A]AX[1A|2B|3C]BO", 
+				    sequenceView);
+		    }
+		}
 
 		private string SelectViewFrom(IEnumerable<I> sequence) =>
 		    string.Join(string.Empty, sequence.Select(o => o.Name));
