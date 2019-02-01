@@ -1,4 +1,5 @@
-﻿using StructureMap.Pipeline;
+﻿using System;
+using StructureMap.Pipeline;
 
 namespace SeqMap
 {
@@ -61,12 +62,17 @@ namespace SeqMap
 			ISetCtorArgWizardStep<TContract, TParam> Ctor<TParam>(string paramName);
 		}
 
-		public interface ISetCtorArgWizardStep<in TContract, in TParam>
+		public interface ISetCtorArgWizardStep<in TContract, TParam>
 		{
 			IChooseCtorParamOrSetNextItemWizardStep<TContract> IsNamedInstance(string name);
 			IChooseCtorParamOrSetNextItemWizardStep<TContract> Is(Instance instance);
 			IChooseCtorParamOrSetNextItemWizardStep<TContract> Is(TParam value);
+
 			IChooseCtorParamOrSetNextItemWizardStep<TContract> Is<TParamImplementation>() 
+				where TParamImplementation : TParam;
+
+			IChooseCtorParamOrSetNextItemWizardStep<TContract> Is<TParamImplementation>(
+				Action<SmartInstance<TParamImplementation, TParam>> configure)
 				where TParamImplementation : TParam;
 		}
 	}

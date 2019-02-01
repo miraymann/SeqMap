@@ -344,6 +344,14 @@ namespace SeqMap
 						return new ChooseCtorParamWizardStep<TImplementation>(_state.Base);
 					}
 
+					public IChooseCtorParamOrSetNextItemWizardStep<TContract> Is<TParamImplementation>(
+						Action<SmartInstance<TParamImplementation, TParam>> configure)
+						where TParamImplementation : TParam
+					{
+						SetParam(param => param.Is(configure));
+						return new ChooseCtorParamWizardStep<TImplementation>(_state.Base);
+					}
+
 					public IChooseCtorParamOrSetNextItemWizardStep<TContract> Is(TParam value)
 					{
 						SetParam(param => param.Is(value));
