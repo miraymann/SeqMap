@@ -1938,7 +1938,6 @@ namespace SeqMap.Tests
 	    {
 		    var registry = new Registry();
 
-		    var arg1A = registry.For<Arg1>().Add<Arg1A>().Ctor<string>().Is("1A");
 		    var arg2A = registry.For<Arg2>().Add<Arg2A>().Ctor<string>().Is("2A");
 		    var arg3A = registry.For<Arg3>().Add<Arg3A>().Ctor<string>().Is("3A").Named("3A_NAME");
 
@@ -1948,7 +1947,6 @@ namespace SeqMap.Tests
 
 		    var arg1C = registry.For<Arg1>().Add<Arg1C>().Ctor<string>().Is("1C").Named("1C_NAME");
 		    var arg2C = registry.For<Arg2>().Add<Arg2C>().Ctor<string>().Is("2C");
-		    var arg3C = registry.For<Arg3>().Add<Arg3C>().Ctor<string>().Is("3C");
 
 			registry.For<I>().Add<A>();
 		    registry.For<I>().Add<B>();
@@ -1968,9 +1966,9 @@ namespace SeqMap.Tests
 				.NextIs<C>()
 				.NextIs<B>()
 				.AddNext<WithArgs>()
-					.Ctor<Arg1>().Is(arg1A)
+					.Ctor<Arg1>().Is<Arg1A>(arg => arg.Ctor<string>().Is("1A"))
 					.Ctor<Arg2>().Is(arg2A)
-					.Ctor<Arg3>().Is(arg3C)
+					.Ctor<Arg3>().Is<Arg3C>(arg => arg.Ctor<string>().Is("3C"))
 				.NextIs<A>()
 				.AddNext<WithArgs>()
 					.Ctor<Arg1>().Is(arg1B)
@@ -1987,7 +1985,7 @@ namespace SeqMap.Tests
 				.AddNext<WithArgs>()
 					.Ctor<Arg1>().Is(arg1C)
 					.Ctor<Arg2>().IsNamedInstance("2B_NAME")
-					.Ctor<Arg3>().Is(arg3C)
+					.Ctor<Arg3>().Is<Arg3C>(arg => arg.Ctor<string>().Is("3C"))
 				.NextIs<B>()
 				.AddNext<O>()
 				.End();
@@ -2046,6 +2044,90 @@ namespace SeqMap.Tests
 					sequenceView);
 			}
 		}
+		
+		[Test]
+		public void AddNext_CtorIsT_SingleProfile_Test()
+		{
+			var registry = new Registry();
+
+			registry.ForEnumerabletOf<I>()
+				.UseSequence()
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1C>(arg => arg.Ctor<string>().Is("1C"))
+					.Ctor<Arg2>().Is<Arg2B>(arg => arg.Ctor<string>().Is("2B"))
+					.Ctor<Arg3>().Is<Arg3B>(arg => arg.Ctor<string>().Is("3B"))
+				.AddNext<WithArgs>().IntoProfile("Dog")
+					.Ctor<Arg1>().Is<Arg1C>(arg => arg.Ctor<string>().Is("1C"))
+					.Ctor<Arg2>().Is<Arg2C>(arg => arg.Ctor<string>().Is("2C"))
+					.Ctor<Arg3>().Is<Arg3B>(arg => arg.Ctor<string>().Is("3B"))
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1A>(arg => arg.Ctor<string>().Is("1A"))
+					.Ctor<Arg2>().Is<Arg2A>(arg => arg.Ctor<string>().Is("2A"))
+					.Ctor<Arg3>().Is<Arg3C>(arg => arg.Ctor<string>().Is("3C"))
+				.AddNext<WithArgs>().IntoProfile("Dog")
+					.Ctor<Arg1>().Is<Arg1B>(arg => arg.Ctor<string>().Is("1B"))
+					.Ctor<Arg2>().Is<Arg2B>(arg => arg.Ctor<string>().Is("2B"))
+					.Ctor<Arg3>().Is<Arg3A>(arg => arg.Ctor<string>().Is("3A"))
+				.AddNext<WithArgs>().IntoProfile("Dog")
+					.Ctor<Arg1>().Is<Arg1C>(arg => arg.Ctor<string>().Is("1C"))
+					.Ctor<Arg2>().Is<Arg2B>(arg => arg.Ctor<string>().Is("2B"))
+					.Ctor<Arg3>().Is<Arg3A>(arg => arg.Ctor<string>().Is("3A"))
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1A>(arg => arg.Ctor<string>().Is("1A"))
+					.Ctor<Arg2>().Is<Arg2B>(arg => arg.Ctor<string>().Is("2B"))
+					.Ctor<Arg3>().Is<Arg3C>(arg => arg.Ctor<string>().Is("3C"))
+				.End();
+
+			using (var container = new Container(registry))
+			using (var dogContainer = container.GetNestedContainer("Dog"))
+			{
+				var sequence = container.GetInstance<IEnumerable<I>>();
+				var dogSequence = dogContainer.GetInstance<IEnumerable<I>>();
+
+				var sequenceView = SelectViewFrom(sequence);
+				var dogSequenceView = SelectViewFrom(dogSequence);
+
+				Assert.AreEqual(
+					"[1C|2B|3B][1A|2A|3C][1A|2B|3C]",
+					sequenceView);
+
+				Assert.AreEqual(
+					"[1C|2B|3B][1C|2C|3B][1A|2A|3C][1B|2B|3A][1C|2B|3A][1A|2B|3C]",
+					dogSequenceView);
+			}
+		}
+
+		[Test]
+	    public void CtorIs_WorkAsInStructureMap_Test()
+	    {
+		    var registry = new Registry();
+
+			registry.For<Arg1>().Add<Arg1A>().Ctor<string>().Is("1A");
+		    registry.For<Arg2>().Add<Arg2A>().Ctor<string>().Is("2A");
+		    registry.For<Arg3>().Add<Arg3A>().Ctor<string>().Is("3A");
+
+		    registry.For<WithArgs>().Add<WithArgs>()
+			    .Ctor<Arg1>().Is<Arg1A>()
+			    .Ctor<Arg2>().Is<Arg2A>()
+			    .Ctor<Arg3>().Is<Arg3A>();
+
+			registry.ForEnumerabletOf<I>()
+				.UseSequence()
+				.AddNext<WithArgs>()
+					.Ctor<Arg1>().Is<Arg1A>()
+					.Ctor<Arg2>().Is<Arg2A>()
+					.Ctor<Arg3>().Is<Arg3A>()
+				.End();
+
+			using (var container = new Container(registry))
+		    {
+			    Assert.Throws<StructureMapBuildPlanException>(
+				    () => container.GetInstance<WithArgs>());
+
+			    Assert.Throws<StructureMapBuildPlanException>(
+				    () => container.GetInstance<IEnumerable<I>>().ToArray());
+			}
+	    }
 
 		private string SelectViewFrom(IEnumerable<I> sequence) =>
 		    string.Join(string.Empty, sequence.Select(o => o.Name));
