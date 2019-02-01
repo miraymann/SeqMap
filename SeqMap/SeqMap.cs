@@ -76,14 +76,18 @@ namespace SeqMap
 			}
 
 			public ISetProfileOrChooseCtorParamOrSetNextItemWizardStep<TContract> AddNext<TImplementation>()
-				where TImplementation : TContract =>
-					new ChooseCtorParamWizardStep<TImplementation>(
-						new ChooseCtorParamWizardStep<TImplementation>.State
-						{
-							MapCtorParams = instance => instance,
-							Base = _state
-						});
-			
+				where TImplementation : TContract
+			{
+				SetNextItem(_state);
+
+				return new ChooseCtorParamWizardStep<TImplementation>(
+					new ChooseCtorParamWizardStep<TImplementation>.State
+					{
+						MapCtorParams = instance => instance,
+						Base = _state
+					});
+			}
+
 			public ISetProfilesOrNextItemWitzardStep<TContract> NextIs<TImplementation>() 
 				where TImplementation : TContract
 			{
